@@ -1,0 +1,234 @@
+package com.example.myapplication
+
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import kotlin.random.Random
+
+class MainActivity : AppCompatActivity() {
+    private var score = 0
+    private var lives = 3
+    private lateinit var scoreTextView: TextView
+    private lateinit var ballImageView: ImageView
+    private lateinit var gameLayout: View
+    private lateinit var heart1: ImageView
+    private lateinit var heart2: ImageView
+    private lateinit var heart3: ImageView
+    private lateinit var gameOverTextView: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        scoreTextView = findViewById(R.id.scoreTextView)
+        ballImageView = findViewById(R.id.minion)
+        gameLayout = findViewById(R.id.gameLayout)
+        heart1 = findViewById(R.id.heart1)
+        heart2 = findViewById(R.id.heart2)
+        heart3 = findViewById(R.id.heart3)
+        gameOverTextView = findViewById(R.id.gameOverTextView)
+
+        moveBallToRandomPosition()
+
+        ballImageView.setOnClickListener {
+            if (lives > 0) {
+                score++
+                scoreTextView.text = "Punkty: $score"
+                moveBallToRandomPosition()
+            }
+        }
+
+        gameLayout.setOnClickListener {
+            if (lives > 0) {
+                loseLife()
+            } else {
+                // Restart gry po utracie wszystkich żyć
+                restartGame()
+            }
+        }
+    }
+    private fun moveBallToRandomPosition() {
+        val layoutWidth = gameLayout.width
+        val layoutHeight = gameLayout.height
+
+
+        val minionWidth = ballImageView.width
+        val minionHeight = ballImageView.height
+
+        if (layoutWidth == 0 || layoutHeight == 0) return
+
+        val randomX = Random.nextInt(layoutWidth - minionWidth)
+        val randomY = Random.nextInt(layoutHeight - minionHeight)
+
+        ballImageView.x = randomX.toFloat()
+        ballImageView.y = randomY.toFloat()
+
+        ballImageView.visibility = View.VISIBLE
+    }
+
+    private fun loseLife() {
+        lives--
+        updateLivesDisplay()
+
+        if (lives == 0) {
+            gameOver()
+        }
+    }
+
+    private fun updateLivesDisplay() {
+        when (lives) {
+            2 -> heart3.visibility = View.INVISIBLE
+            1 -> heart2.visibility = View.INVISIBLE
+            0 -> heart1.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun gameOver() {
+        gameOverTextView.visibility = View.VISIBLE
+        ballImageView.visibility = View.INVISIBLE
+    }
+
+    private fun restartGame() {
+        score = 0
+        lives = 3
+        scoreTextView.text = "Punkty: $score"
+        gameOverTextView.visibility = View.GONE
+        heart1.visibility = View.VISIBLE
+        heart2.visibility = View.VISIBLE
+        heart3.visibility = View.VISIBLE
+        moveBallToRandomPosition()
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="528dp"
+        android:layout_height="918dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout"
+        app:srcCompat="@drawable/kubica" />
+
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/scoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Punkty: 0"
+            android:textSize="24sp" />
+
+        <FrameLayout
+            android:id="@+id/gameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/minion"
+                android:layout_width="99dp"
+                android:layout_height="88dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.499"
+                app:srcCompat="@drawable/osama_bin_russel" />
+
+            <ImageView
+                android:id="@+id/crosshair"
+                android:layout_width="91dp"
+                android:layout_height="78dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.825"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.499"
+                app:srcCompat="@drawable/crosshair_467259_1280" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/heart1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/heart_1179054_640" />
+
+            <ImageView
+                android:id="@+id/heart2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/heart_1179054_640"
+                android:layout_marginStart="8dp" />
+
+            <ImageView
+                android:id="@+id/heart3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/heart_1179054_640"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/gameOverTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Game Over"
+            android:textSize="32sp"
+            android:visibility="gone"
+            android:textColor="@android:color/holo_red_dark"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+
+
+
+
